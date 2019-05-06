@@ -7,16 +7,17 @@ import graph.exceptions.GraphInitializationException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.List;
 
 public class Graph<T extends Comparable> implements Serializable, Cloneable {
 
     private enum Type{ ADJACENCY, INCIDENCE }
 
-    private ArrayList<DoublyLinkedList<T>> graph;
+    private ArrayList<DoublyLinkedList<Vertex>> graph;
 
     private Graph(Comparable[][] source, String type){
         graph = new ArrayList<>();
-        if(Type.ADJACENCY.equals(type)){
+        if(Type.ADJACENCY.toString().equals(type)){
             asAdjacency(source);
         } else {
             asIncidence(source);
@@ -25,11 +26,11 @@ public class Graph<T extends Comparable> implements Serializable, Cloneable {
 
     private void asAdjacency(Comparable[][] source){
         for(int outer = 0; outer < source.length; outer++){
-            DoublyLinkedList<T> row = new DoublyLinkedList<>();
+            DoublyLinkedList<Vertex> row = new DoublyLinkedList<>();
             for(int inner = 0; inner < source[0].length; inner++){
                 if(outer != inner){
                     if(equals(source[outer][inner], 1)){
-                        row.add((T) source[outer][inner]);
+                        row.add(new Vertex((T) String.valueOf(inner + 1)));
                     }
                 }
             }
@@ -133,15 +134,45 @@ public class Graph<T extends Comparable> implements Serializable, Cloneable {
         StringBuilder graph = new StringBuilder();
         for(int index = 0; index < this.graph.size(); index++){
             graph
+                    .append("[")
+                    .append(index + 1)
+                    .append("]")
+                    .append(":")
                     .append(
                         display(this.graph.get(index))
                     )
                     .append("\n");
         }
-        return this.graph.toString();
+        return graph.toString();
     }
 
-    private String display(DoublyLinkedList<T> dll){
-        return dll.toString();
+    private String display(DoublyLinkedList<Vertex> dll){
+        return filter(dll.toString());
+    }
+
+    private String filter(String dll){
+        return dll
+                .replaceAll("head", "")
+                .replaceAll("null", "")
+                .replaceAll("[{}]", "")
+                .replaceAll("/", "")
+                .replaceAll("<->", "")
+                .replaceAll("[(]", "[")
+                .replaceAll("[)]", "]");
+
+    }
+
+    private class Vertex {
+        private T data;
+        private DoublyLinkedList<Vertex> neighbours = null;
+
+        public Vertex(T data){
+            this.data = data;
+        }
+
+        @Override
+        public String toString() {
+            return data.toString();
+        }
     }
 }
