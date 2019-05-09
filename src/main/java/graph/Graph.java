@@ -7,7 +7,6 @@ import graph.exceptions.GraphInitializationException;
 
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.List;
 
 public class Graph<T extends Comparable> implements Serializable, Cloneable {
 
